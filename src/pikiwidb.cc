@@ -127,7 +127,6 @@ void PikiwiDB::OnNewConnection(pikiwidb::TcpConnection* obj) {
 
   //add new PClient to clients 
   clients[client->GetUniqueId()] = client.get();
-  INFO("new client id{}", obj->GetUniqueId());
 }
 
 uint32_t PikiwiDB::GetAllClientInfos(std::vector<ClientInfo>& results)
@@ -170,7 +169,7 @@ bool PikiwiDB::KillAllClients() {
 
 
 
-bool PikiwiDB::KillClientsByAddrPort(const std::string& addr_port) {
+bool PikiwiDB::KillClientByAddrPort(const std::string& addr_port) {
   std::shared_lock<std::shared_mutex> client_map_lock(client_map_mutex);
   for(auto& [id, client] : clients){
     std::string client_ip_port = client->PeerIP() + ":" + std::to_string(client->PeerPort());
