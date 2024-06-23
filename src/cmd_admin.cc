@@ -488,7 +488,7 @@ CmdClientSetname::CmdClientSetname(const std::string& name, int16_t arity)
 bool CmdClientSetname::DoInitial(PClient* client) {return true; }
 
 void pikiwidb::CmdClientSetname::DoCmd(PClient* client) {
-  client->SetName(client->argv_[3]);
+  client->SetName(client->argv_[2]);
   client->SetRes(CmdRes::kOK);
 }
 
@@ -550,7 +550,7 @@ void CmdClientKill::DoCmd(PClient* client) {
 }
 
 CmdClientList::CmdClientList(const std::string& name, int16_t arity)
-  : BaseCmd(name, arity, kCmdFlagsAdmin, kAclCategoryAdmin) {}
+  : BaseCmd(name, arity, kCmdFlagsAdmin|kCmdFlagsReadonly, kAclCategoryAdmin) {}
 
 bool CmdClientList::DoInitial(PClient * client){
   if(client->argv_.size() == 2){
@@ -578,7 +578,8 @@ bool CmdClientList::DoInitial(PClient * client){
   //     client->SetRes(CmdRes::kErrOther, "Syntax error, try CLIENT (LIST [order by [addr|idle])");
   //     return false;
   // }
-  return true; 
+  client->SetRes(CmdRes::kErrOther, "Syntax error, try CLIENT (LIST [ID client_id_1, client_id_2...])");
+  return false; 
 }
 
 void CmdClientList::DoCmd(PClient* client) {
