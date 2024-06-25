@@ -251,4 +251,22 @@ var _ = Describe("Admin", Ordered, func() {
 		del2 := client.Del(ctx, "list2")
 		Expect(del2.Err()).NotTo(HaveOccurred())
 	})
+	It("Cmd Client", func() {
+		get := client.ClientGetName(ctx)
+		Expect(get.Err()).NotTo(HaveOccurred())
+		Expect(get.Val()).To(Equal("clientxxx"))
+
+		resId := client.ClientID(ctx).Err()
+		Expect(resId).NotTo(HaveOccurred())
+		Expect(client.ClientID(ctx).Val()).To(BeNumerically(">=", 0))
+
+		resKillFilter := client.ClientKillByFilter(ctx, "ADDR", "1.1.1.1:1111")
+		Expect(resKillFilter.Err()).To(MatchError("ERR No such client"))
+		Expect(resKillFilter.Val()).To(Equal(int64(0)))
+
+		resKillFilter = client.ClientKillByFilter(ctx, "ID", "1")
+		Expect(resKillFilter.Err()).To(MatchError("ERR No such client"))
+		Expect(resKillFilter.Val()).To(Equal(int64(0)))
+	})
+
 })
