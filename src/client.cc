@@ -21,7 +21,6 @@
 
 namespace pikiwidb {
 
-
 const ClientInfo ClientInfo::invalidClientInfo = {-1, "", -1, -1};
 
 void CmdRes::RedisAppendLen(std::string& str, int64_t ori, const std::string& prefix) {
@@ -152,7 +151,6 @@ void CmdRes::SetRes(CmdRes::CmdRet _ret, const std::string& content) {
 CmdRes::~CmdRes() { message_.clear(); }
 
 thread_local PClient* PClient::s_current = nullptr;
-
 
 std::mutex monitors_mutex;
 std::set<std::weak_ptr<PClient>, std::owner_less<std::weak_ptr<PClient> > > monitors;
@@ -568,8 +566,8 @@ int PClient::GetUniqueId() const {
   return -1;
 }
 
-ClientInfo PClient::GetClientInfo() const { 
-  if(auto c = getTcpConnection(); c) {
+ClientInfo PClient::GetClientInfo() const {
+  if (auto c = getTcpConnection(); c) {
     return {GetUniqueId(), PeerIP().c_str(), PeerPort(), GetFd()};
   }
   return ClientInfo::invalidClientInfo;

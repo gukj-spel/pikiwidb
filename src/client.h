@@ -110,14 +110,14 @@ enum class ClientState {
 class DB;
 struct PSlaveInfo;
 
-struct ClientInfo{
+struct ClientInfo {
   int client_id;
   std::string ip;
   int port;
   int fd;
   static const ClientInfo invalidClientInfo;
-  bool operator==(ClientInfo& ci) const{return client_id == ci.client_id;}
-}; 
+  bool operator==(ClientInfo& ci) const { return client_id == ci.client_id; }
+};
 class PClient : public std::enable_shared_from_this<PClient>, public CmdRes {
  public:
   PClient() = delete;
@@ -227,7 +227,7 @@ class PClient : public std::enable_shared_from_this<PClient>, public CmdRes {
   std::span<std::string> argv_;
 
  private:
-std::shared_ptr<TcpConnection> getTcpConnection() const { return tcp_connection_.lock(); }
+  std::shared_ptr<TcpConnection> getTcpConnection() const { return tcp_connection_.lock(); }
   int handlePacket(const char*, int);
   void executeCommand();
   int processInlineCmd(const char*, size_t, std::vector<std::string>&);
@@ -273,7 +273,6 @@ std::shared_ptr<TcpConnection> getTcpConnection() const { return tcp_connection_
   time_t last_auth_ = 0;
 
   ClientState state_;
-
 
   static thread_local PClient* s_current;
 };

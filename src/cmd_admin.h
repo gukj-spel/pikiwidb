@@ -88,16 +88,16 @@ class CmdClient : public BaseCmdGroup {
 
  protected:
   std::string operation_, info_;
-  bool DoInitial(PClient* client) override{return true;}
+  bool DoInitial(PClient* client) override { return true; }
 
-private:
+ private:
   const static std::string CLIENT_LIST_S;
   const static std::string CLIENT_KILL_S;
 
-  void DoCmd(PClient* client) override{}
+  void DoCmd(PClient* client) override {}
 };
 
-class CmdClientGetname: public BaseCmd{
+class CmdClientGetname : public BaseCmd {
  public:
   CmdClientGetname(const std::string& name, int16_t arity);
 
@@ -108,7 +108,7 @@ class CmdClientGetname: public BaseCmd{
   void DoCmd(PClient* client) override;
 };
 
-class CmdClientSetname: public BaseCmd{
+class CmdClientSetname : public BaseCmd {
  public:
   CmdClientSetname(const std::string& name, int16_t arity);
 
@@ -119,7 +119,7 @@ class CmdClientSetname: public BaseCmd{
   void DoCmd(PClient* client) override;
 };
 
-class CmdClientId: public BaseCmd{
+class CmdClientId : public BaseCmd {
  public:
   CmdClientId(const std::string& name, int16_t arity);
 
@@ -130,15 +130,11 @@ class CmdClientId: public BaseCmd{
   void DoCmd(PClient* client) override;
 };
 
-
-
-
-class CmdClientList: public BaseCmd{
+class CmdClientList : public BaseCmd {
  private:
-  enum class Type{
-    DEFAULT, IDLE,  ADDR, ID 
-  } list_type_;
+  enum class Type { DEFAULT, IDLE, ADDR, ID } list_type_;
   std::string info_;
+
  public:
   CmdClientList(const std::string& name, int16_t arity);
 
@@ -149,12 +145,10 @@ class CmdClientList: public BaseCmd{
   void DoCmd(PClient* client) override;
 };
 
-
-class CmdClientKill: public BaseCmd{
+class CmdClientKill : public BaseCmd {
  private:
-  enum class Type{
-    ALL, ADDR, ID 
-  } kill_type_;
+  enum class Type { ALL, ADDR, ID } kill_type_;
+
  public:
   CmdClientKill(const std::string& name, int16_t arity);
 
@@ -164,8 +158,6 @@ class CmdClientKill: public BaseCmd{
  private:
   void DoCmd(PClient* client) override;
 };
-
-
 
 class SelectCmd : public BaseCmd {
  public:

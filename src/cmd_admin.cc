@@ -23,7 +23,6 @@
 
 #include "store.h"
 
-
 namespace pikiwidb {
 
 CmdConfig::CmdConfig(const std::string& name, int arity) : BaseCmdGroup(name, kCmdFlagsAdmin, kAclCategoryAdmin) {}
@@ -466,27 +465,22 @@ void SortCmd::InitialArgument() {
   get_patterns_.clear();
   ret_.clear();
 }
+CmdClient::CmdClient(const std::string& name, int arity)
+    : BaseCmdGroup(name, kCmdFlagsReadonly | kCmdFlagsAdmin, kAclCategoryAdmin) {}
 
-CmdClient::CmdClient(const std::string & name, int arity):BaseCmdGroup(name,  kCmdFlagsReadonly|kCmdFlagsAdmin, kAclCategoryAdmin){}
+bool CmdClient::HasSubCommand() const { return true; }
 
-bool CmdClient::HasSubCommand() const {return true; }
+CmdClientGetname::CmdClientGetname(const std::string& name, int16_t arity)
+    : BaseCmd(name, arity, kCmdFlagsAdmin | kCmdFlagsReadonly, kAclCategoryAdmin) {}
 
+bool CmdClientGetname::DoInitial(PClient* client) { return true; }
 
-CmdClientGetname::CmdClientGetname(const std::string& name, int16_t arity) 
-  : BaseCmd(name, arity, kCmdFlagsAdmin | kCmdFlagsReadonly, kAclCategoryAdmin) {}
+void CmdClientGetname::DoCmd(PClient* client) { client->AppendString(client->GetName()); }
 
-bool CmdClientGetname::DoInitial(PClient* client) {return true; }
+CmdClientSetname::CmdClientSetname(const std::string& name, int16_t arity)
+    : BaseCmd(name, arity, kCmdFlagsAdmin | kCmdFlagsWrite, kAclCategoryAdmin) {}
 
-void CmdClientGetname::DoCmd(PClient* client) {
-  client->AppendString(client->GetName());
-}
-
-
-CmdClientSetname::CmdClientSetname(const std::string& name, int16_t arity) 
-  : BaseCmd(name, arity, kCmdFlagsAdmin | kCmdFlagsWrite, kAclCategoryAdmin) {}
-
-
-bool CmdClientSetname::DoInitial(PClient* client) {return true; }
+bool CmdClientSetname::DoInitial(PClient* client) { return true; }
 
 void pikiwidb::CmdClientSetname::DoCmd(PClient* client) {
   client->SetName(client->argv_[2]);
@@ -494,30 +488,26 @@ void pikiwidb::CmdClientSetname::DoCmd(PClient* client) {
 }
 
 CmdClientId::CmdClientId(const std::string& name, int16_t arity)
-  : BaseCmd(name, arity, kCmdFlagsAdmin | kCmdFlagsReadonly, kAclCategoryAdmin) {}
+    : BaseCmd(name, arity, kCmdFlagsAdmin | kCmdFlagsReadonly, kAclCategoryAdmin) {}
 
 bool CmdClientId::DoInitial(PClient* client) { return true; }
 
-void CmdClientId::DoCmd(PClient* client) {
-  client->AppendInteger(client->GetUniqueId());
-}
-
+void CmdClientId::DoCmd(PClient* client) { client->AppendInteger(client->GetUniqueId()); }
 
 CmdClientKill::CmdClientKill(const std::string& name, int16_t arity)
-  : BaseCmd(name, arity, kCmdFlagsAdmin, kAclCategoryAdmin) {
-}
+    : BaseCmd(name, arity, kCmdFlagsAdmin, kAclCategoryAdmin) {}
 
-bool CmdClientKill::DoInitial(PClient* client) { 
-  if(strcasecmp(client->argv_[2].data(), "all")== 0){
+bool CmdClientKill::DoInitial(PClient* client) {
+  if (strcasecmp(client->argv_[2].data(), "all") == 0) {
     kill_type_ = Type::ALL;
     return true;
-  }else if(client->argv_.size() == 4 && strcasecmp(client->argv_[2].data(), "addr")== 0){
+  } else if (client->argv_.size() == 4 && strcasecmp(client->argv_[2].data(), "addr") == 0) {
     kill_type_ = Type::ADDR;
     return true;
-  }else if(client->argv_.size() == 4 && strcasecmp(client->argv_[2].data(), "id")== 0){
+  } else if (client->argv_.size() == 4 && strcasecmp(client->argv_[2].data(), "id") == 0) {
     kill_type_ = Type::ID;
     return true;
-  }else{
+  } else {
     client->SetRes(CmdRes::kWrongNum, client->CmdName());
     return false;
   }
@@ -525,19 +515,16 @@ bool CmdClientKill::DoInitial(PClient* client) {
 
 void CmdClientKill::DoCmd(PClient* client) {
   bool ret;
-  switch(kill_type_){
-    case Type::ALL:
-    {
+  switch (kill_type_) {
+    case Type::ALL: {
       ret = g_pikiwidb->KillAllClients();
       break;
     }
-    case Type::ADDR:
-    {
+    case Type::ADDR: {
       ret = g_pikiwidb->KillClientByAddrPort(client->argv_[3]);
       break;
     }
-    case Type::ID:
-    {
+    case Type::ID: {
       try {
         int client_id = stoi(client->argv_[3]);
         ret = g_pikiwidb->KillClientById(client_id);
@@ -553,66 +540,59 @@ void CmdClientKill::DoCmd(PClient* client) {
 }
 
 CmdClientList::CmdClientList(const std::string& name, int16_t arity)
-  : BaseCmd(name, arity, kCmdFlagsAdmin|kCmdFlagsReadonly, kAclCategoryAdmin) {}
+    : BaseCmd(name, arity, kCmdFlagsAdmin | kCmdFlagsReadonly, kAclCategoryAdmin) {}
 
-bool CmdClientList::DoInitial(PClient * client){
-  if(client->argv_.size() == 2){
-    list_type_ = Type::DEFAULT; 
+bool CmdClientList::DoInitial(PClient* client) {
+  if (client->argv_.size() == 2) {
+    list_type_ = Type::DEFAULT;
     return true;
   }
-  if(client->argv_.size() > 3 && strcasecmp(client->argv_[2].data(), "id")== 0){
-    list_type_ = Type:: ID;
+  if (client->argv_.size() > 3 && strcasecmp(client->argv_[2].data(), "id") == 0) {
+    list_type_ = Type::ID;
     return true;
   }
   client->SetRes(CmdRes::kErrOther, "Syntax error, try CLIENT (LIST [ID client_id_1, client_id_2...])");
-  return false; 
+  return false;
 }
 
 void CmdClientList::DoCmd(PClient* client) {
-  switch (list_type_)
-  {
-  case Type::DEFAULT:
-  {
-    std::vector<pikiwidb::ClientInfo> client_infos;
-    g_pikiwidb->GetAllClientInfos(client_infos);
-    client->AppendArrayLen(client_infos.size());
-    if(client_infos.size() == 0){
-      return;
-    }
-    char buf[128];
-    for(auto &client_info : client_infos){
-      // client->
-      snprintf(buf, sizeof(buf), "ID=%d IP=%s PORT=%d FD=%d\n", 
-              client_info.client_id, client_info.ip.c_str(), client_info.port, client_info.fd);
-      client->AppendString(std::string(buf));
-    }
-    break;
-  }
-  case Type::ID:
-  {
-    client->AppendArrayLen(client->argv_.size() - 3);
-
-    for(size_t i = 3; i < client->argv_.size(); i++){
-      try
-      {
-        int client_id = std::stoi(client->argv_[i]);
-        auto client_info = g_pikiwidb->GetClientsInfoById(client_id);
-        char buf[128];
-        snprintf(buf, sizeof(buf), "ID=%d IP=%s PORT=%d FD=%d\n", 
-                client_info.client_id, client_info.ip.c_str(), client_info.port, client_info.fd);
-        client->AppendString(std::string(buf));
-      }
-      catch(const std::exception& e)
-      {
-        client->SetRes(CmdRes::kErrOther, "Invalid client id");
+  switch (list_type_) {
+    case Type::DEFAULT: {
+      std::vector<pikiwidb::ClientInfo> client_infos;
+      g_pikiwidb->GetAllClientInfos(client_infos);
+      client->AppendArrayLen(client_infos.size());
+      if (client_infos.size() == 0) {
         return;
       }
+      char buf[128];
+      for (auto& client_info : client_infos) {
+        // client->
+        snprintf(buf, sizeof(buf), "ID=%d IP=%s PORT=%d FD=%d\n", client_info.client_id, client_info.ip.c_str(),
+                 client_info.port, client_info.fd);
+        client->AppendString(std::string(buf));
+      }
+      break;
     }
-    break;
-  }
-  default:
-    break;
-  }
+    case Type::ID: {
+      client->AppendArrayLen(client->argv_.size() - 3);
 
+      for (size_t i = 3; i < client->argv_.size(); i++) {
+        try {
+          int client_id = std::stoi(client->argv_[i]);
+          auto client_info = g_pikiwidb->GetClientsInfoById(client_id);
+          char buf[128];
+          snprintf(buf, sizeof(buf), "ID=%d IP=%s PORT=%d FD=%d\n", client_info.client_id, client_info.ip.c_str(),
+                   client_info.port, client_info.fd);
+          client->AppendString(std::string(buf));
+        } catch (const std::exception& e) {
+          client->SetRes(CmdRes::kErrOther, "Invalid client id");
+          return;
+        }
+      }
+      break;
+    }
+    default:
+      break;
+  }
 }
 }  // namespace pikiwidb

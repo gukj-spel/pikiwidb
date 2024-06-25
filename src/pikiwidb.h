@@ -45,8 +45,7 @@ class PikiwiDB final {
 
   void PushWriteTask(const std::shared_ptr<pikiwidb::PClient>& client) { worker_threads_.PushWriteTask(client); }
 
-
-  //client message function
+  // client message function
   uint32_t GetAllClientInfos(std::vector<pikiwidb::ClientInfo>& results);
   pikiwidb::ClientInfo GetClientsInfoById(int id);
 
@@ -71,7 +70,7 @@ class PikiwiDB final {
   pikiwidb::IOThreadPool slave_threads_;
   pikiwidb::CmdThreadPool cmd_threads_;
   //  pikiwidb::CmdTableManager cmd_table_manager_;
-  //use std::list to store client pointer as a double linked list
+  // use std::list to store client pointer as a double linked list
   std::shared_mutex client_map_mutex;
   std::mutex killer_mutex;
   std::map<int, pikiwidb::PClient*> clients;
