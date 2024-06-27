@@ -125,7 +125,7 @@ void PikiwiDB::OnNewConnection(pikiwidb::TcpConnection* obj) {
   obj->SetSlaveEventLoopSelector([this]() { return slave_threads_.ChooseNextWorkerEventLoop(); });
 
   // add new PClient to clients
-  clients[client->GetUniqueId()] = client.get();
+  clients.insert({client->GetUniqueId(), client});
 }
 
 uint32_t PikiwiDB::GetAllClientInfos(std::vector<ClientInfo>& results) {

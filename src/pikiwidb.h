@@ -73,7 +73,7 @@ class PikiwiDB final {
   // use std::list to store client pointer as a double linked list
   std::shared_mutex client_map_mutex;
   std::mutex killer_mutex;
-  std::map<int, pikiwidb::PClient*> clients;
+  std::map<int, std::shared_ptr<pikiwidb::PClient>> clients;
   uint32_t cmd_id_ = 0;
   std::atomic<int64_t> client_id_ = 0;
 };
