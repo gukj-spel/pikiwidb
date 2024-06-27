@@ -580,6 +580,10 @@ void CmdClientList::DoCmd(PClient* client) {
         try {
           int client_id = std::stoi(client->argv_[i]);
           auto client_info = g_pikiwidb->GetClientsInfoById(client_id);
+          if(client_info == ClientInfo::invalidClientInfo){
+            client->SetRes(CmdRes::kErrOther, "Invalid client id");
+            return;
+          }
           char buf[128];
           snprintf(buf, sizeof(buf), "ID=%d IP=%s PORT=%d FD=%d\n", client_info.client_id, client_info.ip.c_str(),
                    client_info.port, client_info.fd);
