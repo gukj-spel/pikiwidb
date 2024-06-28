@@ -129,19 +129,24 @@ void PikiwiDB::OnNewConnection(pikiwidb::TcpConnection* obj) {
 }
 
 uint32_t PikiwiDB::GetAllClientInfos(std::vector<ClientInfo>& results) {
-  std::shared_lock<std::shared_mutex> client_map_lock(client_map_mutex);
   // client info string type: ip, port, fd.
-  for (auto& [id, client] : clients) {
-    if (auto clientInfo = client->GetClientInfo(); clientInfo != ClientInfo::invalidClientInfo) {
-      results.emplace_back(clientInfo);
+  std::shared_lock<std::shared_mutex> client_map_lock(client_map_mutex);
+  auto it = clients.begin();
+  while(it != clients.end()) {
+    auto client = it->second.lock();
+    if(client){
+      results.emplace_back(client->GetClientInfo());
     }
+    it++;
   }
   return results.size();
 }
 ClientInfo PikiwiDB::GetClientsInfoById(int id) {
   std::shared_lock client_map_lock(client_map_mutex);
   if (auto it = clients.find(id); it != clients.end()) {
-    return it->second->GetClientInfo();
+    if(auto client = it->second.lock(); client){
+      return client->GetClientInfo();
+    }
   }
   return ClientInfo::invalidClientInfo;
 }
@@ -157,22 +162,30 @@ bool PikiwiDB::RemoveClientMetaById(int id) {
 
 bool PikiwiDB::KillAllClients() {
   std::shared_lock<std::shared_mutex> client_map_lock(client_map_mutex);
-  for (auto& [id, client] : clients) {
-    client_map_lock.unlock();
-    client->Close();
-    client_map_lock.lock();
+  auto it = clients.begin();
+  while(it != clients.end()){
+    auto client = it->second.lock();
+    if(client){
+      client_map_lock.unlock();
+      client->Close();
+      client_map_lock.lock();
+    }
+    it++;
   }
   return true;
 }
 
 bool PikiwiDB::KillClientByAddrPort(const std::string& addr_port) {
   std::shared_lock<std::shared_mutex> client_map_lock(client_map_mutex);
-  for (auto& [id, client] : clients) {
-    std::string client_ip_port = client->PeerIP() + ":" + std::to_string(client->PeerPort());
-    if (client_ip_port == addr_port) {
-      client_map_lock.unlock();
-      client->Close();
-      return true;
+  for (auto& [id, client_weak] : clients) {
+    auto client = client_weak.lock();
+    if(client){
+      std::string client_ip_port = client->PeerIP() + ":" + std::to_string(client->PeerPort());
+      if (client_ip_port == addr_port) {
+        client_map_lock.unlock();
+        client->Close();
+        return true;
+      }
     }
   }
   return false;
@@ -181,9 +194,12 @@ bool PikiwiDB::KillClientByAddrPort(const std::string& addr_port) {
 bool PikiwiDB::KillClientById(int client_id) {
   std::shared_lock<std::shared_mutex> client_map_lock(client_map_mutex);
   if (auto it = clients.find(client_id); it != clients.end()) {
-    client_map_lock.unlock();
-    it->second->Close();
-    return true;
+    auto client = it->second.lock();
+    if(client){
+      client_map_lock.unlock();
+      client->Close();
+      return true;
+    }
   }
   return false;
 }
