@@ -580,7 +580,7 @@ void CmdClientList::DoCmd(PClient* client) {
         try {
           int client_id = std::stoi(client->argv_[i]);
           auto client_info = g_pikiwidb->GetClientsInfoById(client_id);
-          if(client_info == ClientInfo::invalidClientInfo){
+          if (client_info == ClientInfo::invalidClientInfo) {
             client->SetRes(CmdRes::kErrOther, "Invalid client id");
             return;
           }

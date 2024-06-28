@@ -132,9 +132,9 @@ uint32_t PikiwiDB::GetAllClientInfos(std::vector<ClientInfo>& results) {
   // client info string type: ip, port, fd.
   std::shared_lock<std::shared_mutex> client_map_lock(client_map_mutex);
   auto it = clients.begin();
-  while(it != clients.end()) {
+  while (it != clients.end()) {
     auto client = it->second.lock();
-    if(client){
+    if (client) {
       results.emplace_back(client->GetClientInfo());
     }
     it++;
@@ -144,7 +144,7 @@ uint32_t PikiwiDB::GetAllClientInfos(std::vector<ClientInfo>& results) {
 ClientInfo PikiwiDB::GetClientsInfoById(int id) {
   std::shared_lock client_map_lock(client_map_mutex);
   if (auto it = clients.find(id); it != clients.end()) {
-    if(auto client = it->second.lock(); client){
+    if (auto client = it->second.lock(); client) {
       return client->GetClientInfo();
     }
   }
@@ -163,9 +163,9 @@ bool PikiwiDB::RemoveClientMetaById(int id) {
 bool PikiwiDB::KillAllClients() {
   std::shared_lock<std::shared_mutex> client_map_lock(client_map_mutex);
   auto it = clients.begin();
-  while(it != clients.end()){
+  while (it != clients.end()) {
     auto client = it->second.lock();
-    if(client){
+    if (client) {
       client_map_lock.unlock();
       client->Close();
       client_map_lock.lock();
@@ -179,7 +179,7 @@ bool PikiwiDB::KillClientByAddrPort(const std::string& addr_port) {
   std::shared_lock<std::shared_mutex> client_map_lock(client_map_mutex);
   for (auto& [id, client_weak] : clients) {
     auto client = client_weak.lock();
-    if(client){
+    if (client) {
       std::string client_ip_port = client->PeerIP() + ":" + std::to_string(client->PeerPort());
       if (client_ip_port == addr_port) {
         client_map_lock.unlock();
@@ -195,7 +195,7 @@ bool PikiwiDB::KillClientById(int client_id) {
   std::shared_lock<std::shared_mutex> client_map_lock(client_map_mutex);
   if (auto it = clients.find(client_id); it != clients.end()) {
     auto client = it->second.lock();
-    if(client){
+    if (client) {
       client_map_lock.unlock();
       client->Close();
       return true;
