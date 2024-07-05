@@ -5,6 +5,7 @@
  * of patent rights can be found in the PATENTS file in the same directory.
  */
 
+#include "client_map.h"
 #include "cmd_table_manager.h"
 #include "cmd_thread_pool.h"
 #include "common.h"
@@ -45,16 +46,6 @@ class PikiwiDB final {
 
   void PushWriteTask(const std::shared_ptr<pikiwidb::PClient>& client) { worker_threads_.PushWriteTask(client); }
 
-  // client message function
-  uint32_t GetAllClientInfos(std::vector<pikiwidb::ClientInfo>& results);
-  pikiwidb::ClientInfo GetClientsInfoById(int id);
-
-  bool RemoveClientMetaById(int id);
-
-  bool KillAllClients();
-  bool KillClientByAddrPort(const std::string& addr_port);
-  bool KillClientById(int client_id);
-
  public:
   PString cfg_file_;
   uint16_t port_{0};
@@ -71,9 +62,7 @@ class PikiwiDB final {
   pikiwidb::CmdThreadPool cmd_threads_;
   //  pikiwidb::CmdTableManager cmd_table_manager_;
   // use std::list to store client pointer as a double linked list
-  std::shared_mutex client_map_mutex;
   std::mutex killer_mutex;
-  std::map<int, std::weak_ptr<pikiwidb::PClient>> clients;
   uint32_t cmd_id_ = 0;
   std::atomic<int64_t> client_id_ = 0;
 };

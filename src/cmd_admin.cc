@@ -21,6 +21,7 @@
 #include "praft/praft.h"
 #include "pstd/env.h"
 
+#include "client_map.h"
 #include "store.h"
 
 namespace pikiwidb {
@@ -515,19 +516,20 @@ bool CmdClientKill::DoInitial(PClient* client) {
 
 void CmdClientKill::DoCmd(PClient* client) {
   bool ret;
+  auto& client_map = pikiwidb::ClientMap::getInstance();
   switch (kill_type_) {
     case Type::ALL: {
-      ret = g_pikiwidb->KillAllClients();
+      ret = client_map.KillAllClients();
       break;
     }
     case Type::ADDR: {
-      ret = g_pikiwidb->KillClientByAddrPort(client->argv_[3]);
+      ret = client_map.KillClientByAddrPort(client->argv_[3]);
       break;
     }
     case Type::ID: {
       try {
         int client_id = stoi(client->argv_[3]);
-        ret = g_pikiwidb->KillClientById(client_id);
+        ret = client_map.KillClientById(client_id);
       } catch (const std::exception& e) {
         client->SetRes(CmdRes::kErrOther, "Invalid client id");
         return;
@@ -556,10 +558,11 @@ bool CmdClientList::DoInitial(PClient* client) {
 }
 
 void CmdClientList::DoCmd(PClient* client) {
+  auto& client_map = ClientMap::getInstance();
   switch (list_type_) {
     case Type::DEFAULT: {
       std::vector<pikiwidb::ClientInfo> client_infos;
-      g_pikiwidb->GetAllClientInfos(client_infos);
+      client_map.GetAllClientInfos(client_infos);
       client->AppendArrayLen(client_infos.size());
       if (client_infos.size() == 0) {
         return;
@@ -579,7 +582,7 @@ void CmdClientList::DoCmd(PClient* client) {
       for (size_t i = 3; i < client->argv_.size(); i++) {
         try {
           int client_id = std::stoi(client->argv_[i]);
-          auto client_info = g_pikiwidb->GetClientsInfoById(client_id);
+          auto client_info = client_map.GetClientsInfoById(client_id);
           if (client_info == ClientInfo::invalidClientInfo) {
             client->SetRes(CmdRes::kErrOther, "Invalid client id");
             return;
