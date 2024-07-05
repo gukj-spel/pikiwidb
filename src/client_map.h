@@ -7,7 +7,6 @@
 #include "client.h"
 
 namespace pikiwidb {
-
 class ClientMap {
  private:
   ClientMap() = default;

@@ -5,7 +5,6 @@
  * of patent rights can be found in the PATENTS file in the same directory.
  */
 
-#include "client_map.h"
 #include "cmd_table_manager.h"
 #include "cmd_thread_pool.h"
 #include "common.h"
