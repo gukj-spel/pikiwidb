@@ -1,4 +1,5 @@
 #include "client_map.h"
+#include "log.h"
 
 namespace pikiwidb {
 
@@ -6,12 +7,10 @@ uint32_t ClientMap::GetAllClientInfos(std::vector<ClientInfo>& results) {
   // client info string type: ip, port, fd.
   std::shared_lock<std::shared_mutex> client_map_lock(client_map_mutex_);
   auto it = clients_.begin();
-  while (it != clients_.end()) {
-    auto client = it->second.lock();
-    if (client) {
+  for (auto& [id, client_weak] : clients_) {
+    if (auto client = client_weak.lock()) {
       results.emplace_back(client->GetClientInfo());
     }
-    it++;
   }
   return results.size();
 }
@@ -32,6 +31,7 @@ ClientInfo ClientMap::GetClientsInfoById(int id) {
       return client->GetClientInfo();
     }
   }
+  ERROR("Client with ID {} not found", id);
   return ClientInfo::invalidClientInfo;
 }
 
@@ -39,6 +39,7 @@ bool ClientMap::RemoveClientById(int id) {
   std::unique_lock client_map_lock(client_map_mutex_);
   if (auto it = clients_.find(id); it != clients_.end()) {
     clients_.erase(it);
+    INFO("Removed client with ID {}", id);
     return true;
   }
   return false;
@@ -81,7 +82,9 @@ bool ClientMap::KillClientById(int client_id) {
     auto client = it->second.lock();
     if (client) {
       client_map_lock.unlock();
+      INFO("Closing client with ID {}", client_id);
       client->Close();
+      INFO("Client with ID {} closed", client_id);
       return true;
     }
   }
