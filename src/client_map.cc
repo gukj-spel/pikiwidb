@@ -6,7 +6,6 @@ namespace pikiwidb {
 uint32_t ClientMap::GetAllClientInfos(std::vector<ClientInfo>& results) {
   // client info string type: ip, port, fd.
   std::shared_lock<std::shared_mutex> client_map_lock(client_map_mutex_);
-  auto it = clients_.begin();
   for (auto& [id, client_weak] : clients_) {
     if (auto client = client_weak.lock()) {
       results.emplace_back(client->GetClientInfo());
@@ -31,7 +30,7 @@ ClientInfo ClientMap::GetClientsInfoById(int id) {
       return client->GetClientInfo();
     }
   }
-  ERROR("Client with ID {} not found", id);
+  ERROR("Client with ID {} not found in GetClientsInfoById", id);
   return ClientInfo::invalidClientInfo;
 }
 
@@ -46,47 +45,57 @@ bool ClientMap::RemoveClientById(int id) {
 }
 
 bool ClientMap::KillAllClients() {
-  std::shared_lock<std::shared_mutex> client_map_lock(client_map_mutex_);
-  auto it = clients_.begin();
-  while (it != clients_.end()) {
-    auto client = it->second.lock();
-    if (client) {
-      client_map_lock.unlock();
-      client->Close();
-      client_map_lock.lock();
+  std::vector<std::shared_ptr<PClient>> clients_to_close;
+  {
+    std::shared_lock<std::shared_mutex> client_map_lock(client_map_mutex_);
+    for (auto& [id, client_weak] : clients_) {
+      if (auto client = client_weak.lock()) {
+        clients_to_close.push_back(client);
+      }
     }
-    it++;
+  }
+  for (auto& client : clients_to_close) {
+    client->Close();
   }
   return true;
 }
 
 bool ClientMap::KillClientByAddrPort(const std::string& addr_port) {
-  std::shared_lock<std::shared_mutex> client_map_lock(client_map_mutex_);
-  for (auto& [id, client_weak] : clients_) {
-    auto client = client_weak.lock();
-    if (client) {
-      std::string client_ip_port = client->PeerIP() + ":" + std::to_string(client->PeerPort());
-      if (client_ip_port == addr_port) {
-        client_map_lock.unlock();
-        client->Close();
-        return true;
+  std::shared_ptr<PClient> client_to_close;
+  {
+    std::shared_lock<std::shared_mutex> client_map_lock(client_map_mutex_);
+    for (auto& [id, client_weak] : clients_) {
+      if (auto client = client_weak.lock()) {
+        std::string client_ip_port = client->PeerIP() + ":" + std::to_string(client->PeerPort());
+        if (client_ip_port == addr_port) {
+          client_to_close = client;
+          break;
+        }
       }
     }
+  }
+  if (client_to_close) {
+    client_to_close->Close();
+    return true;
   }
   return false;
 }
 
 bool ClientMap::KillClientById(int client_id) {
-  std::shared_lock<std::shared_mutex> client_map_lock(client_map_mutex_);
-  if (auto it = clients_.find(client_id); it != clients_.end()) {
-    auto client = it->second.lock();
-    if (client) {
-      client_map_lock.unlock();
-      INFO("Closing client with ID {}", client_id);
-      client->Close();
-      INFO("Client with ID {} closed", client_id);
-      return true;
+  std::shared_ptr<PClient> client_to_close;
+  {
+    std::shared_lock<std::shared_mutex> client_map_lock(client_map_mutex_);
+    if (auto it = clients_.find(client_id); it != clients_.end()) {
+      if (auto client = it->second.lock()) {
+        client_to_close = client;
+      }
     }
+  }
+  if (client_to_close) {
+    INFO("Closing client with ID {}", client_id);
+    client_to_close->Close();
+    INFO("Client with ID {} closed", client_id);
+    return true;
   }
   return false;
 }
