@@ -499,7 +499,7 @@ CmdClientKill::CmdClientKill(const std::string& name, int16_t arity)
     : BaseCmd(name, arity, kCmdFlagsAdmin, kAclCategoryAdmin) {}
 
 bool CmdClientKill::DoInitial(PClient* client) {
-  if (strcasecmp(client->argv_[2].data(), "all") == 0) {
+  if (client->argv_.size() == 3 && strcasecmp(client->argv_[2].data(), "all") == 0) {
     kill_type_ = Type::ALL;
     return true;
   } else if (client->argv_.size() == 4 && strcasecmp(client->argv_[2].data(), "addr") == 0) {
