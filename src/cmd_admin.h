@@ -179,7 +179,7 @@ class MonitorCmd : public BaseCmd {
  public:
   MonitorCmd(const std::string& name, int arity);
 
-protected:
+ protected:
   bool DoInitial(PClient* client) override;
 
  private:
