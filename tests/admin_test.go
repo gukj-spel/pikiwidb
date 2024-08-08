@@ -255,7 +255,7 @@ var _ = Describe("Admin", Ordered, func() {
 
 	It("should monitor", Label("monitor"), func() {
 		ress := make(chan string)
-		client1 := redis.NewClient(&redis.Options{Addr: "127.0.0.1"})
+		client1 := s.NewClient()
 		mn := client1.Monitor(ctx, ress)
 		mn.Start()
 		// Wait for the Redis server to be in monitoring mode.
@@ -271,8 +271,15 @@ var _ = Describe("Admin", Ordered, func() {
 		}
 		mn.Stop()
 		Expect(lst[0]).To(ContainSubstring("OK"))
-		Expect(lst[1]).To(ContainSubstring(`"set" "foo" "bar"`))
-		Expect(lst[2]).To(ContainSubstring(`"set" "bar" "baz"`))
-		Expect(lst[3]).To(ContainSubstring(`"set" "bap" "8"`))
+		Expect(lst[2]).To(ContainSubstring(`"set foo bar"`))
+		Expect(lst[3]).To(ContainSubstring(`"set bar baz"`))
+		Expect(lst[4]).To(ContainSubstring(`"set bap 8"`))
+
+		err := client1.Close()
+		if err != nil {
+			log.Println("Close monitor client conn fail.", err.Error())
+			return
+		}
+
 	})
 })
