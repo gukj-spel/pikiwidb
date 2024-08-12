@@ -92,7 +92,7 @@ class NumberValue : public BaseValue {
  private:
   Status SetValue(const std::string& value) override;
 
-  std::T* value_ = nullptr;
+  T* value_ = nullptr;
   T value_min_;
   T value_max_;
 };
@@ -173,6 +173,8 @@ class PConfig {
   int rocksdb_level0_stop_writes_trigger = 36;
   uint64_t rocksdb_ttl_second = 604800;       // default 86400 * 7
   uint64_t rocksdb_periodic_second = 259200;  // default 86400 * 3
+
+  std::shared_mutex rwlock_;
 
   rocksdb::Options GetRocksDBOptions();
 

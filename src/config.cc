@@ -178,20 +178,25 @@ bool PConfig::LoadFromFile(const std::string& file_name) {
 
 void PConfig::Get(const std::string& key, std::vector<std::string>* values) const {
   values->clear();
+  std::shared_lock l(rwlock_);
   for (const auto& [k, v] : config_map_) {
+    l.unlock();
     if (key == "*" || pstd::StringMatch(key.c_str(), k.c_str(), 1)) {
       values->emplace_back(k);
       values->emplace_back(v->Value());
     }
+    l.lock();
   }
 }
 
 Status PConfig::Set(std::string key, const std::string& value, bool init_stage) {
   std::transform(key.begin(), key.end(), key.begin(), ::tolower);
+  std::unique_lock l(rwlock_);
   auto iter = config_map_.find(key);
   if (iter == config_map_.end()) {
     return Status::NotFound("Non-existent configuration items.");
   }
+  
   return iter->second->Set(value, init_stage);
 }
 
