@@ -496,7 +496,7 @@ CmdClientId::CmdClientId(const std::string& name, int16_t arity)
 
 bool CmdClientId::DoInitial(PClient* client) { return true; }
 
-void CmdClientId::DoCmd(PClient* client) { client->AppendInteger(client->GetUniqueId()); }
+void CmdClientId::DoCmd(PClient* client) { client->AppendInteger(client->GetUniqueID()); }
 
 CmdClientKill::CmdClientKill(const std::string& name, int16_t arity)
     : BaseCmd(name, arity, kCmdFlagsAdmin, kAclCategoryAdmin) {}
@@ -573,8 +573,8 @@ void CmdClientList::DoCmd(PClient* client) {
       char buf[128];
       for (auto& client_info : client_infos) {
         // client->
-        snprintf(buf, sizeof(buf), "ID=%d IP=%s PORT=%d FD=%d\n", client_info.client_id, client_info.ip.c_str(),
-                 client_info.port, client_info.fd);
+        snprintf(buf, sizeof(buf), "ID=%ld IP=%s PORT=%d\n", client_info.client_id, client_info.ip.c_str(),
+                 client_info.port);
         client->AppendString(std::string(buf));
       }
       break;
@@ -591,8 +591,8 @@ void CmdClientList::DoCmd(PClient* client) {
             return;
           }
           char buf[128];
-          snprintf(buf, sizeof(buf), "ID=%d IP=%s PORT=%d FD=%d\n", client_info.client_id, client_info.ip.c_str(),
-                   client_info.port, client_info.fd);
+          snprintf(buf, sizeof(buf), "ID=%ld IP=%s PORT=%d\n", client_info.client_id, client_info.ip.c_str(),
+                   client_info.port);
           client->AppendString(std::string(buf));
         } catch (const std::exception& e) {
           client->SetRes(CmdRes::kErrOther, "Invalid client id");

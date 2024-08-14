@@ -111,7 +111,7 @@ void PikiwiDB::OnNewConnection(uint64_t connId, std::shared_ptr<pikiwidb::PClien
   client->SetSocketAddr(addr);
   client->OnConnect();
   // add new PClient to clients
-  ClientMap::getInstance().AddClient(client->GetUniqueId(), client);
+  ClientMap::getInstance().AddClient(client->GetUniqueID(), client);
 }
 
 bool PikiwiDB::Init() {
@@ -159,6 +159,7 @@ bool PikiwiDB::Init() {
   event_server_->SetOnCreate([](uint64_t connID, std::shared_ptr<PClient>& client, const net::SocketAddr& addr) {
     client->SetSocketAddr(addr);
     client->OnConnect();
+    ClientMap::getInstance().AddClient(client->GetUniqueID(), client);
     INFO("New connection from fd:{} IP:{} port:{}", connID, addr.GetIP(), addr.GetPort());
   });
 
@@ -169,6 +170,7 @@ bool PikiwiDB::Init() {
   event_server_->SetOnClose([](std::shared_ptr<PClient>& client, std::string&& msg) {
     INFO("Close connection id:{} msg:{}", client->GetConnId(), msg);
     client->OnClose();
+    ClientMap::getInstance().RemoveClientById(client->GetUniqueID());
   });
 
   event_server_->InitTimer(10);
