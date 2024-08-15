@@ -21,7 +21,7 @@
 
 namespace pikiwidb {
 
-const ClientInfo ClientInfo::invalidClientInfo = {-1, "", -1};
+const ClientInfo ClientInfo::invalidClientInfo = {0, "", -1};
 
 void CmdRes::RedisAppendLen(std::string& str, int64_t ori, const std::string& prefix) {
   str.append(prefix);

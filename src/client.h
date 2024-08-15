@@ -118,7 +118,7 @@ class DB;
 struct PSlaveInfo;
 
 struct ClientInfo {
-  int64_t client_id;
+  uint64_t client_id;
   std::string ip;
   int port;
   static const ClientInfo invalidClientInfo;
