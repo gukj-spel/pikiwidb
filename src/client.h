@@ -122,7 +122,7 @@ struct ClientInfo {
   std::string ip;
   int port;
   static const ClientInfo invalidClientInfo;
-  bool operator==(ClientInfo& ci) const { return client_id == ci.client_id; }
+  bool operator==(const ClientInfo& ci) const { return client_id == ci.client_id; }
 };
 
 class PClient : public std::enable_shared_from_this<PClient>, public CmdRes {
