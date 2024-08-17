@@ -102,42 +102,41 @@ Status NumberValue<T>::SetValue(const std::string& value) {
 }
 
 PConfig::PConfig() {
-  AddBool("daemonize", &CheckYesNo, false, &daemonize);
-  AddString("ip", false, {&ip});
-  AddNumberWihLimit<uint16_t>("port", false, &port, PORT_LIMIT_MIN, PORT_LIMIT_MAX);
+  AddPrimitiveValueWithFunc<bool>("daemonize", &CheckYesNo, false, &daemonize);
+  AddPrimitiveValue<std::string>("ip", false, {&ip});
+  AddPrimitiveValueWithLimit<uint16_t>("port", false, &port, PORT_LIMIT_MIN, PORT_LIMIT_MAX);
   AddNumber("raft-port-offset", true, &raft_port_offset);
   AddNumber("timeout", true, &timeout);
-  AddString("db-path", false, {&db_path});
-  AddStrinWithFunc("loglevel", &CheckLogLevel, false, {&log_level});
-  AddString("logfile", false, {&log_dir});
-  AddNumberWihLimit<size_t>("databases", false, &databases, 1, DBNUMBER_MAX);
+  AddPrimitiveValue<std::string>("db-path", false, {&db_path});
+  AddPrimitiveValueWithFunc<std::string>("loglevel", &CheckLogLevel, false, {&log_level});
+  AddPrimitiveValue<std::string>("logfile", false, {&log_dir});
+  AddPrimitiveValueWithLimit<size_t>("databases", false, &databases, 1, DBNUMBER_MAX);
   AddString("requirepass", true, {&password});
   AddNumber("maxclients", true, &max_clients);
-  AddNumberWihLimit<uint32_t>("worker-threads", false, &worker_threads_num, 1, THREAD_MAX);
-  AddNumberWihLimit<uint32_t>("slave-threads", false, &worker_threads_num, 1, THREAD_MAX);
+  AddPrimitiveValueWithLimit<uint32_t>("worker-threads", false, &worker_threads_num, 1, THREAD_MAX);
+  AddPrimitiveValueWithLimit<uint32_t>("slave-threads", false, &worker_threads_num, 1, THREAD_MAX);
   AddNumber("slowlog-log-slower-than", true, &slow_log_time);
   AddNumber("slowlog-max-len", true, &slow_log_max_len);
-  AddNumberWihLimit<size_t>("db-instance-num", true, &db_instance_num, 1, ROCKSDB_INSTANCE_NUMBER_MAX);
-  AddNumberWihLimit<int32_t>("fast-cmd-threads-num", false, &fast_cmd_threads_num, 1, THREAD_MAX);
-  AddNumberWihLimit<int32_t>("slow-cmd-threads-num", false, &slow_cmd_threads_num, 1, THREAD_MAX);
+  AddNumberWithLimit<size_t>("db-instance-num", true, &db_instance_num, 1, ROCKSDB_INSTANCE_NUMBER_MAX);
+  AddPrimitiveValueWithLimit<int32_t>("fast-cmd-threads-num", false, &fast_cmd_threads_num, 1, THREAD_MAX);
+  AddPrimitiveValueWithLimit<int32_t>("slow-cmd-threads-num", false, &slow_cmd_threads_num, 1, THREAD_MAX);
   AddNumber("max-client-response-size", true, &max_client_response_size);
-  AddString("runid", false, {&run_id});
+  AddPrimitiveValue<std::string>("runid", false, {&run_id});
   AddNumber("small-compaction-threshold", true, &small_compaction_threshold);
   AddNumber("small-compaction-duration-threshold", true, &small_compaction_duration_threshold);
-  AddBool("use-raft", &CheckYesNo, false, &use_raft);
+  AddPrimitiveValueWithFunc<bool>("use-raft", &CheckYesNo, false, &use_raft);
 
   // rocksdb config
-  AddNumber("rocksdb-max-subcompactions", false, &rocksdb_max_subcompactions);
-  AddNumber("rocksdb-max-background-jobs", false, &rocksdb_max_background_jobs);
-  AddNumber("rocksdb-max-write-buffer-number", false, &rocksdb_max_write_buffer_number);
-  AddNumber("rocksdb-min-write-buffer-number-to-merge", false, &rocksdb_min_write_buffer_number_to_merge);
-  AddNumber("rocksdb-write-buffer-size", false, &rocksdb_write_buffer_size);
-  AddNumber("rocksdb-level0-file-num-compaction-trigger", false, &rocksdb_level0_file_num_compaction_trigger);
+  AddPrimitiveValue<decltype(rocksdb_max_subcompactions)>("rocksdb-max-subcompactions", false, &rocksdb_max_subcompactions);
+  AddPrimitiveValue<decltype(rocksdb_max_background_jobs)>("rocksdb-max-background-jobs", false, &rocksdb_max_background_jobs);
+  AddPrimitiveValue<decltype(rocksdb_max_write_buffer_number)>("rocksdb-max-write-buffer-number", false, &rocksdb_max_write_buffer_number);
+  AddPrimitiveValue<decltype(rocksdb_min_write_buffer_number_to_merge)>("rocksdb-min-write-buffer-number-to-merge", false, &rocksdb_min_write_buffer_number_to_merge);
+  AddPrimitiveValue<decltype(rocksdb_write_buffer_size)>("rocksdb-write-buffer-size", false, &rocksdb_write_buffer_size);
+  AddPrimitiveValue<decltype(rocksdb_level0_file_num_compaction_trigger)>("rocksdb-level0-file-num-compaction-trigger", false, &rocksdb_level0_file_num_compaction_trigger);
   AddNumber("rocksdb-number-levels", true, &rocksdb_num_levels);
   AddBool("rocksdb-enable-pipelined-write", CheckYesNo, false, &rocksdb_enable_pipelined_write);
-  AddNumber("rocksdb-level0-slowdown-writes-trigger", false, &rocksdb_level0_slowdown_writes_trigger);
-  AddNumber("rocksdb-level0-stop-writes-trigger", false, &rocksdb_level0_stop_writes_trigger);
-  AddNumber("rocksdb-level0-slowdown-writes-trigger", false, &rocksdb_level0_slowdown_writes_trigger);
+  AddPrimitiveValue<decltype(rocksdb_level0_slowdown_writes_trigger)>("rocksdb-level0-slowdown-writes-trigger", false, &rocksdb_level0_slowdown_writes_trigger);
+  AddPrimitiveValue<decltype(rocksdb_level0_stop_writes_trigger)>("rocksdb-level0-stop-writes-trigger", false, &rocksdb_level0_stop_writes_trigger);
 }
 
 bool PConfig::LoadFromFile(const std::string& file_name) {
