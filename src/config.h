@@ -140,7 +140,7 @@ class PrimitiveValue : public BaseValue {
     assert(value_ != nullptr);
   };
 
-  std::string Value() const requires std::is_arithmetic_v<T> { return std::to_string(*value_); }
+  std::string Value() const requires std::is_arithmetic_v<T> override { return std::to_string(*value_); }
 
  private:
   Status SetValue(const std::string& value) override {
@@ -158,7 +158,7 @@ class PrimitiveValue<std::string> : public BaseValue {
     assert(value_ != nullptr);
   };
 
-  std::string Value() const { return *value_; }
+  std::string Value() const override { return *value_; }
 
  private:
   Status SetValue(const std::string& value) override {
