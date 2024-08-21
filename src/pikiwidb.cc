@@ -124,16 +124,16 @@ bool PikiwiDB::Init() {
     g_config.Set("log-level", log_level_, true);
   }
 
-  auto num = g_config.worker_threads_num.load() + g_config.slave_threads_num.load();
+  auto num = g_config.worker_threads_num + g_config.slave_threads_num.load();
 
   // now we only use fast cmd thread pool
-  auto status = cmd_threads_.Init(g_config.fast_cmd_threads_num.load(), 0, "pikiwidb-cmd");
+  auto status = cmd_threads_.Init(g_config.fast_cmd_threads_num, 0, "pikiwidb-cmd");
   if (!status.ok()) {
     ERROR("init cmd thread pool failed: {}", status.ToString());
     return false;
   }
 
-  PSTORE.Init(g_config.databases.load(std::memory_order_relaxed));
+  PSTORE.Init(g_config.databases);
 
   PSlowLog::Instance().SetThreshold(g_config.slow_log_time.load());
   PSlowLog::Instance().SetLogLimit(static_cast<std::size_t>(g_config.slow_log_max_len.load()));
@@ -147,8 +147,8 @@ bool PikiwiDB::Init() {
 
   event_server_->SetRwSeparation(true);
 
-  net::SocketAddr addr(g_config.ip.ToString(), g_config.port.load());
-  INFO("Add listen addr:{}, port:{}", g_config.ip.ToString(), g_config.port.load());
+  net::SocketAddr addr(g_config.ip, g_config.port);
+  INFO("Add listen addr:{}, port:{}", g_config.ip, g_config.port);
   event_server_->AddListenAddr(addr);
 
   event_server_->SetOnInit([](std::shared_ptr<PClient>* client) { *client = std::make_shared<PClient>(); });
@@ -277,7 +277,7 @@ int main(int ac, char* av[]) {
            static_cast<int>(g_config.port));
   std::cout << logo;
 
-  if (g_config.daemonize.load()) {
+  if (g_config.daemonize) {
     daemonize();
   }
 
@@ -286,7 +286,7 @@ int main(int ac, char* av[]) {
   InitLogs();
   InitLimit();
 
-  if (g_config.daemonize.load()) {
+  if (g_config.daemonize) {
     closeStd();
   }
 

@@ -127,16 +127,25 @@ PConfig::PConfig() {
   AddPrimitiveValueWithFunc<bool>("use-raft", &CheckYesNo, false, &use_raft);
 
   // rocksdb config
-  AddPrimitiveValue<decltype(rocksdb_max_subcompactions)>("rocksdb-max-subcompactions", false, &rocksdb_max_subcompactions);
-  AddPrimitiveValue<decltype(rocksdb_max_background_jobs)>("rocksdb-max-background-jobs", false, &rocksdb_max_background_jobs);
-  AddPrimitiveValue<decltype(rocksdb_max_write_buffer_number)>("rocksdb-max-write-buffer-number", false, &rocksdb_max_write_buffer_number);
-  AddPrimitiveValue<decltype(rocksdb_min_write_buffer_number_to_merge)>("rocksdb-min-write-buffer-number-to-merge", false, &rocksdb_min_write_buffer_number_to_merge);
-  AddPrimitiveValue<decltype(rocksdb_write_buffer_size)>("rocksdb-write-buffer-size", false, &rocksdb_write_buffer_size);
-  AddPrimitiveValue<decltype(rocksdb_level0_file_num_compaction_trigger)>("rocksdb-level0-file-num-compaction-trigger", false, &rocksdb_level0_file_num_compaction_trigger);
+  AddPrimitiveValue<decltype(rocksdb_max_subcompactions)>("rocksdb-max-subcompactions", false,
+                                                          &rocksdb_max_subcompactions);
+  AddPrimitiveValue<decltype(rocksdb_max_background_jobs)>("rocksdb-max-background-jobs", false,
+                                                           &rocksdb_max_background_jobs);
+  AddPrimitiveValue<decltype(rocksdb_max_write_buffer_number)>("rocksdb-max-write-buffer-number", false,
+                                                               &rocksdb_max_write_buffer_number);
+  AddPrimitiveValue<decltype(rocksdb_min_write_buffer_number_to_merge)>(
+      "rocksdb-min-write-buffer-number-to-merge", false, &rocksdb_min_write_buffer_number_to_merge);
+  AddPrimitiveValue<decltype(rocksdb_write_buffer_size)>("rocksdb-write-buffer-size", false,
+                                                         &rocksdb_write_buffer_size);
+  AddPrimitiveValue<decltype(rocksdb_level0_file_num_compaction_trigger)>(
+      "rocksdb-level0-file-num-compaction-trigger", false, &rocksdb_level0_file_num_compaction_trigger);
   AddNumber("rocksdb-number-levels", true, &rocksdb_num_levels);
-  AddBool("rocksdb-enable-pipelined-write", CheckYesNo, false, &rocksdb_enable_pipelined_write);
-  AddPrimitiveValue<decltype(rocksdb_level0_slowdown_writes_trigger)>("rocksdb-level0-slowdown-writes-trigger", false, &rocksdb_level0_slowdown_writes_trigger);
-  AddPrimitiveValue<decltype(rocksdb_level0_stop_writes_trigger)>("rocksdb-level0-stop-writes-trigger", false, &rocksdb_level0_stop_writes_trigger);
+  AddPrimitiveValueWithFunc<decltype(rocksdb_enable_pipelined_write)>("rocksdb-enable-pipelined-write", CheckYesNo,
+                                                                      false, &rocksdb_enable_pipelined_write);
+  AddPrimitiveValue<decltype(rocksdb_level0_slowdown_writes_trigger)>("rocksdb-level0-slowdown-writes-trigger", false,
+                                                                      &rocksdb_level0_slowdown_writes_trigger);
+  AddPrimitiveValue<decltype(rocksdb_level0_stop_writes_trigger)>("rocksdb-level0-stop-writes-trigger", false,
+                                                                  &rocksdb_level0_stop_writes_trigger);
 }
 
 bool PConfig::LoadFromFile(const std::string& file_name) {

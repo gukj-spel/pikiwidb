@@ -112,53 +112,60 @@ class BoolValue : public BaseValue {
 };
 
 template <typename T>
-class PrimitiveValueWithLimit: public BaseValue {
+class PrimitiveValueWithLimit : public BaseValue {
  public:
   PrimitiveValueWithLimit(const std::string& key, CheckFunc check_func_ptr, bool rewritable, T* value_ptr,
-              T min = std::numeric_limits<T>::min(), T max = std::numeric_limits<T>::max())
+                          T min = std::numeric_limits<T>::min(), T max = std::numeric_limits<T>::max())
       : BaseValue(key, check_func_ptr, rewritable), value_(value_ptr), value_min_(min), value_max_(max) {
     assert(value_ != nullptr);
     assert(value_min_ <= value_max_);
   };
 
-  std::string Value() const requires std::is_arithmetic_v<T>{
-    return std::to_string(*value);
-  }
-
-  std::string Value() const requires std::is_same_v<T, std::string>{
-    return *value;
-  }
-
+  std::string Value() const requires std::is_arithmetic_v<T> { return std::to_string(*value_); }
 
  private:
-  Status SetValue(const std::string& value) override;
+  Status SetValue(const std::string& value) override {
+    return Status::NotSupported("Primitive set value is not supported");
+  }
   T* value_ = nullptr;
   T value_min_;
   T value_max_;
 };
 
 template <typename T>
-class PrimitiveValue: public BaseValue {
+class PrimitiveValue : public BaseValue {
  public:
   PrimitiveValue(const std::string& key, CheckFunc check_func_ptr, bool rewritable, T* value_ptr)
-      : BaseValue(key, check_func_ptr, rewritable), value_(value_ptr), value_min_(min), value_max_(max) {
+      : BaseValue(key, check_func_ptr, rewritable), value_(value_ptr) {
     assert(value_ != nullptr);
   };
 
-  std::string Value() const requires std::is_arithmetic_v<T>{
-    return std::to_string(*value);
-  }
-
-  std::string Value() const requires std::is_same_v<T, std::string>{
-    return *value;
-  }
+  std::string Value() const requires std::is_arithmetic_v<T> { return std::to_string(*value_); }
 
  private:
-  Status SetValue(const std::string& value) override;
+  Status SetValue(const std::string& value) override {
+    return Status::NotSupported("Primitive set value is not supported");
+  }
 
-  std::atomic<T>* value_ = nullptr;
-  T value_min_;
-  T value_max_;
+  T* value_ = nullptr;
+};
+
+template <>
+class PrimitiveValue<std::string> : public BaseValue {
+ public:
+  PrimitiveValue(const std::string& key, CheckFunc check_func_ptr, bool rewritable, std::string* value_ptr)
+      : BaseValue(key, check_func_ptr, rewritable), value_(value_ptr) {
+    assert(value_ != nullptr);
+  };
+
+  std::string Value() const { return *value_; }
+
+ private:
+  Status SetValue(const std::string& value) override {
+    return Status::NotSupported("Primitive set value is not supported");
+  }
+
+  std::string* value_ = nullptr;
 };
 
 using ValuePrt = std::unique_ptr<BaseValue>;
@@ -193,12 +200,12 @@ class PConfig {
   std::atomic_uint64_t small_compaction_duration_threshold = 259200;
 
   bool daemonize = false;
-  AtomicString        pid_file = "./pikiwidb.pid";
+  AtomicString pid_file = "./pikiwidb.pid";
   std::string ip = "127.0.0.1";
   std::uint16_t port = 9221;
   std::atomic_uint16_t raft_port_offset = 10;
   std::string db_path = "./db/";
-  std::string  log_dir = "stdout";  // the log directory, differ from redis
+  std::string log_dir = "stdout";  // the log directory, differ from redis
   std::string log_level = "warning";
   std::string run_id;
   size_t databases = 16;
@@ -251,22 +258,19 @@ class PConfig {
 
   template <typename T>
   inline void AddPrimitiveValueWithLimit(const std::string& key, bool rewritable, T* value_ptr, T min, T max) {
-    config_map_.emplace(key, std::make_unique<PrimitiveValueWithLimit<T>>(key, nullptr, rewritable, value_ptr, min, max));
+    config_map_.emplace(key,
+                        std::make_unique<PrimitiveValueWithLimit<T>>(key, nullptr, rewritable, value_ptr, min, max));
   }
 
   template <typename T>
-  inline void AddPrimitiveValueWithFunc(const std::string& key, const CheckFunc& checkfunc, bool rewritable, T* value_ptr) {
+  inline void AddPrimitiveValueWithFunc(const std::string& key, const CheckFunc& checkfunc, bool rewritable,
+                                        T* value_ptr) {
     config_map_.emplace(key, std::make_unique<PrimitiveValue<T>>(key, checkfunc, rewritable, value_ptr));
   }
 
   template <typename T>
   inline void AddPrimitiveValue(const std::string& key, bool rewritable, T* value_ptr) {
     config_map_.emplace(key, std::make_unique<PrimitiveValue<T>>(key, nullptr, rewritable, value_ptr));
-  }
-
-  inline void AddBool(const std::string& key, const CheckFunc& checkfunc, bool rewritable,
-                      bool* value_ptr) {
-    config_map_.emplace(key, std::make_unique<BoolValue>(key, checkfunc, rewritable, value_ptr));
   }
 
  private:
