@@ -1,8 +1,11 @@
+// Copyright (c) 2023-present, OpenAtom Foundation, Inc.  All rights reserved.
+// This source code is licensed under the BSD-style license found in the
+// LICENSE file in the root directory of this source tree. An additional grant
+// of patent rights can be found in the PATENTS file in the same directory
+
 /*
- * Copyright (c) 2023-present, Qihoo, Inc.  All rights reserved.
- * This source code is licensed under the BSD-style license found in the
- * LICENSE file in the root directory of this source tree. An additional grant
- * of patent rights can be found in the PATENTS file in the same directory.
+  Designed a set of functions and variables associated with
+  the PikiwiDB server.
  */
 
 #include "cmd_table_manager.h"
@@ -63,6 +66,8 @@ class PikiwiDB final {
       const std::function<void(uint64_t, std::shared_ptr<pikiwidb::PClient>&, const net::SocketAddr&)>& onConnect,
       const std::function<void(std::string)>& cb);
 
+  time_t Start_time_s() { return start_time_s_; }
+
  public:
   PString cfg_file_;
   uint16_t port_{0};
@@ -78,7 +83,8 @@ class PikiwiDB final {
 
   std::unique_ptr<net::EventServer<std::shared_ptr<pikiwidb::PClient>>> event_server_;
   uint32_t cmd_id_ = 0;
-  std::atomic<int64_t> client_id_ = 0;
+
+  time_t start_time_s_ = 0;
 };
 
 extern std::unique_ptr<PikiwiDB> g_pikiwidb;

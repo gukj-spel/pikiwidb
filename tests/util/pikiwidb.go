@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2023-present, Qihoo, Inc.  All rights reserved.
+ * Copyright (c) 2023-present, OpenAtom Foundation, Inc.  All rights reserved.
  * This source code is licensed under the BSD-style license found in the
  * LICENSE file in the root directory of this source tree. An additional grant
  * of patent rights can be found in the PATENTS file in the same directory.
@@ -50,11 +50,11 @@ func GetConfPath(copy bool, t int64) string {
 		nPath string
 	)
 	if len(rPath) != 0 && copy {
-		nPath = path.Join(rPath, fmt.Sprintf("pikiwidb_%d.conf", t))
+		nPath = path.Join(rPath, fmt.Sprintf("etc/conf/pikiwidb_%d.conf", t))
 		return nPath
 	}
 	if len(rPath) != 0 {
-		cPath = path.Join(rPath, "pikiwidb.conf")
+		cPath = path.Join(rPath, "etc/conf/pikiwidb.conf")
 		return cPath
 	}
 	return rPath
