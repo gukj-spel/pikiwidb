@@ -110,7 +110,7 @@ AnalyzeTemporaryDtors: true
 #-clang-analyzer-deadcode.DeadStores
 #    error detection in some places
 #-google-runtime-int
-#    todo discussed, because there are so many of `long` and `long long` in Arana/Kiwi, so disable for now
+#    todo discussed, because there are so many of `long` and `long long` in Arana/Kiwi so disable for now
 #-clang-diagnostic-unused-command-line-argument
 #    because there are to many compile command error in github ci, but no error in local environment
 #    See in build folder compile_commands.json
