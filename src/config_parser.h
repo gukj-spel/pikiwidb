@@ -3,7 +3,7 @@
  *     Declared a set of functions for parsing configuration data
  * as required.
  *
- * Copyright (c) 2023-present, Qihoo, Inc.  All rights reserved.
+ * Copyright (c) 2023-present, Arana/Kiwi Community All rights reserved.
  *
  * src/config_parser.h
  *
@@ -20,7 +20,7 @@
 #  include <iostream>
 #endif
 
-namespace pikiwidb {
+namespace kiwi {
 
 class ConfigParser {
  public:
@@ -81,4 +81,4 @@ inline T ConfigParser::GetData(const char* key, const T& default_) const {
   return toType<T>(it->second[0]);  // only return first value
 }
 
-}  // namespace pikiwidb
+}  // namespace kiwi

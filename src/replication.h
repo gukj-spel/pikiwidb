@@ -1,4 +1,4 @@
-// Copyright (c) 2023-present, OpenAtom Foundation, Inc.  All rights reserved.
+// Copyright (c) 2023-present, Arana/Kiwi Community.  All rights reserved.
 // This source code is licensed under the BSD-style license found in the
 // LICENSE file in the root directory of this source tree. An additional grant
 // of patent rights can be found in the PATENTS file in the same directory
@@ -19,7 +19,7 @@
 #include "net/socket_addr.h"
 #include "pstd/memory_file.h"
 
-namespace pikiwidb {
+namespace kiwi {
 
 template <typename DEST>
 inline void WriteBulkString(const char* str, size_t strLen, DEST& dst) {
@@ -161,6 +161,6 @@ class PReplication {
   std::function<void(std::string)> on_fail_ = nullptr;
 };
 
-}  // namespace pikiwidb
+}  // namespace kiwi
 
-#define PREPL pikiwidb::PReplication::Instance()
+#define PREPL kiwi::PReplication::Instance()

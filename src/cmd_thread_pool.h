@@ -1,4 +1,4 @@
-// Copyright (c) 2023-present, OpenAtom Foundation, Inc.  All rights reserved.
+// Copyright (c) 2023-present, Arana/Kiwi Community.  All rights reserved.
 // This source code is licensed under the BSD-style license found in the
 // LICENSE file in the root directory of this source tree. An additional grant
 // of patent rights can be found in the PATENTS file in the same directory
@@ -18,7 +18,7 @@
 #include "base_cmd.h"
 #include "pstd/pstd_status.h"
 
-namespace pikiwidb {
+namespace kiwi {
 
 // task interface
 // inherit this class and implement the Run method
@@ -97,4 +97,4 @@ class CmdThreadPool {
   std::atomic_bool stopped_ = false;
 };
 
-}  // namespace pikiwidb
+}  // namespace kiwi

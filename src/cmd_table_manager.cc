@@ -1,4 +1,4 @@
-// Copyright (c) 2023-present, OpenAtom Foundation, Inc.  All rights reserved.
+// Copyright (c) 2023-present, Arana/Kiwi Community.  All rights reserved.
 // This source code is licensed under the BSD-style license found in the
 // LICENSE file in the root directory of this source tree. An additional grant
 // of patent rights can be found in the PATENTS file in the same directory
@@ -21,7 +21,7 @@
 #include "cmd_zset.h"
 #include "pstd_string.h"
 
-namespace pikiwidb {
+namespace kiwi {
 
 #define ADD_COMMAND(cmd, argc)                                                      \
   do {                                                                              \
@@ -220,4 +220,4 @@ bool CmdTableManager::CmdExist(const std::string& cmd) const {
 
 uint32_t CmdTableManager::GetCmdId() { return ++cmdId_; }
 
-}  // namespace pikiwidb
+}  // namespace kiwi

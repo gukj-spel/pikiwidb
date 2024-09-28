@@ -1,4 +1,4 @@
-// Copyright (c) 2023-present, OpenAtom Foundation, Inc.  All rights reserved.
+// Copyright (c) 2023-present, Arana/Kiwi Community.  All rights reserved.
 // This source code is licensed under the BSD-style license found in the
 // LICENSE file in the root directory of this source tree. An additional grant
 // of patent rights can be found in the PATENTS file in the same directory
@@ -23,7 +23,7 @@
 #include "replication.h"
 #include "storage/storage.h"
 
-namespace pikiwidb {
+namespace kiwi {
 
 struct CommandStatistics {
   CommandStatistics() = default;
@@ -170,7 +170,7 @@ class PClient : public std::enable_shared_from_this<PClient>, public CmdRes {
   //  PClient() = delete;
   explicit PClient();
 
-  //  int HandlePackets(pikiwidb::TcpConnection*, const char*, int);
+  //  int HandlePackets(kiwi::TcpConnection*, const char*, int);
 
   void OnConnect();
 
@@ -351,4 +351,4 @@ class PClient : public std::enable_shared_from_this<PClient>, public CmdRes {
   std::unordered_map<std::string, CommandStatistics> cmdstat_map_;
   std::shared_ptr<TimeStat> time_stat_;
 };
-}  // namespace pikiwidb
+}  // namespace kiwi

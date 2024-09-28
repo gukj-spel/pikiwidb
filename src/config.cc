@@ -1,10 +1,10 @@
-// Copyright (c) 2023-present, OpenAtom Foundation, Inc.  All rights reserved.
+// Copyright (c) 2023-present, Arana/Kiwi Community.  All rights reserved.
 // This source code is licensed under the BSD-style license found in the
 // LICENSE file in the root directory of this source tree. An additional grant
 // of patent rights can be found in the PATENTS file in the same directory
 
 /*
-  Responsible for managing the runtime configuration information of PikiwiDB.
+  Responsible for managing the runtime configuration information of kiwi.
  */
 
 #include <string>
@@ -15,7 +15,7 @@
 #include "pstd/pstd_string.h"
 #include "store.h"
 
-namespace pikiwidb {
+namespace kiwi {
 
 constexpr uint16_t PORT_LIMIT_MAX = 65535;
 constexpr uint16_t PORT_LIMIT_MIN = 1;
@@ -104,6 +104,7 @@ Status NumberValue<T>::SetValue(const std::string& value) {
 }
 
 PConfig::PConfig() {
+  AddBool("redis-compatible-mode", &CheckYesNo, true, {&redis_compatible_mode});
   AddBool("daemonize", &CheckYesNo, false, &daemonize);
   AddString("ip", false, {&ip});
   AddNumberWithLimit<uint16_t>("port", false, &port, PORT_LIMIT_MIN, PORT_LIMIT_MAX);
@@ -219,4 +220,4 @@ rocksdb::BlockBasedTableOptions PConfig::GetRocksDBBlockBasedTableOptions() {
   return options;
 }
 
-}  // namespace pikiwidb
+}  // namespace kiwi

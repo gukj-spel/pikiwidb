@@ -1,4 +1,4 @@
-// Copyright (c) 2023-present, OpenAtom Foundation, Inc.  All rights reserved.
+// Copyright (c) 2023-present, Arana/Kiwi Community.  All rights reserved.
 // This source code is licensed under the BSD-style license found in the
 // LICENSE file in the root directory of this source tree. An additional grant
 // of patent rights can be found in the PATENTS file in the same directory
@@ -14,7 +14,7 @@
 #include <string_view>
 #include <vector>
 
-namespace pikiwidb {
+namespace kiwi {
 
 class UnboundedBuffer {
  public:
@@ -52,4 +52,4 @@ class UnboundedBuffer {
   std::vector<char> buffer_;
 };
 
-}  // namespace pikiwidb
+}  // namespace kiwi

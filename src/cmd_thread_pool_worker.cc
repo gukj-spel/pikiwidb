@@ -1,4 +1,4 @@
-// Copyright (c) 2023-present, OpenAtom Foundation, Inc.  All rights reserved.
+// Copyright (c) 2023-present, Arana/Kiwi Community.  All rights reserved.
 // This source code is licensed under the BSD-style license found in the
 // LICENSE file in the root directory of this source tree. An additional grant
 // of patent rights can be found in the PATENTS file in the same directory
@@ -11,9 +11,9 @@
 #include "client.h"
 #include "env.h"
 #include "log.h"
-#include "pikiwidb.h"
+#include "kiwi.h"
 
-namespace pikiwidb {
+namespace kiwi {
 
 void CmdWorkThreadPoolWorker::Work() {
   while (running_) {
@@ -32,13 +32,13 @@ void CmdWorkThreadPoolWorker::Work() {
         } else {
           task->Client()->SetRes(CmdRes::kInvalidParameter);
         }
-        g_pikiwidb->PushWriteTask(task->Client());
+        g_kiwi->PushWriteTask(task->Client());
         continue;
       }
 
       if (!cmdPtr->CheckArg(task->Client()->ParamsSize())) {
         task->Client()->SetRes(CmdRes::kWrongNum, task->CmdName());
-        g_pikiwidb->PushWriteTask(task->Client());
+        g_kiwi->PushWriteTask(task->Client());
         continue;
       }
 
@@ -57,7 +57,7 @@ void CmdWorkThreadPoolWorker::Work() {
       (*cmdstat_map)[task->CmdName()].cmd_count_.fetch_add(1);
       (*cmdstat_map)[task->CmdName()].cmd_time_consuming_.fetch_add(task->Client()->GetTimeStat()->GetTotalTime());
 
-      g_pikiwidb->PushWriteTask(task->Client());
+      g_kiwi->PushWriteTask(task->Client());
     }
     self_task_.clear();
   }
@@ -114,4 +114,4 @@ void CmdSlowWorker::LoadWork() {
   }
 }
 
-}  // namespace pikiwidb
+}  // namespace kiwi

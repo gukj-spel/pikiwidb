@@ -1,4 +1,4 @@
-// Copyright (c) 2023-present, OpenAtom Foundation, Inc.  All rights reserved.
+// Copyright (c) 2023-present, Arana/Kiwi Community.  All rights reserved.
 // This source code is licensed under the BSD-style license found in the
 // LICENSE file in the root directory of this source tree. An additional grant
 // of patent rights can be found in the PATENTS file in the same directory
@@ -13,7 +13,7 @@
 #include "pstd/pstd_string.h"
 #include "store.h"
 
-namespace pikiwidb {
+namespace kiwi {
 
 SIsMemberCmd::SIsMemberCmd(const std::string& name, int16_t arity)
     : BaseCmd(name, arity, kCmdFlagsReadonly, kAclCategoryRead | kAclCategorySet) {}
@@ -451,4 +451,4 @@ void SScanCmd::DoCmd(PClient* client) {
   }
 }
 
-}  // namespace pikiwidb
+}  // namespace kiwi
